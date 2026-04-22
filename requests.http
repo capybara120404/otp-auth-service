@@ -1,0 +1,79 @@
+### 1. Регистрация администратора
+POST http://localhost:8080/api/register
+Content-Type: application/json
+
+{ "username": "admin", "password": "password123", "role": "ADMIN" }
+
+### 2. Регистрация пользователя
+POST http://localhost:8080/api/register
+Content-Type: application/json
+
+{ "username": "user1", "password": "userpass", "role": "USER" }
+
+### 3. Вход пользователя и получение токена
+# @name loginUser
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{ "username": "user1", "password": "userpass" }
+
+@token = {{loginUser.response.body.token}}
+
+### 4. OTP через EMAIL
+POST http://localhost:8080/api/otp/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 2, "channel": "EMAIL", "destination": "user@example.com" }
+
+### 5. OTP через TELEGRAM
+POST http://localhost:8080/api/otp/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 2, "channel": "TELEGRAM", "destination": "123456789" }
+
+### 6. OTP через FILE (сохранение в файл)
+POST http://localhost:8080/api/otp/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 3, "channel": "FILE", "destination": "test_destination" }
+
+### 7. OTP через SMS (SMPP)
+POST http://localhost:8080/api/otp/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 3, "channel": "SMS", "destination": "+00000000000" }
+
+### 8. Валидация OTP
+POST http://localhost:8080/api/otp/verify
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 3, "code": "вставить полученный код" }
+
+### 9. Ошибка: неверный канал
+POST http://localhost:8080/api/otp/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "userId": 2, "channel": "WHATSAPP", "destination": "123" }
+
+### 10. Вход под администратором
+# @name loginAdmin
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "password123" }
+
+@adminToken = {{loginAdmin.response.body.token}}
+
+### 11. Получение списка пользователей (админ)
+GET http://localhost:8080/api/admin/users
+Authorization: Bearer {{adminToken}}
+
+### 12. Удаление пользователя (админ)
+DELETE http://localhost:8080/api/admin/users/2
+Authorization: Bearer {{adminToken}}
